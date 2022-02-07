@@ -16,10 +16,10 @@ class AuthState with _$AuthState {
   const factory AuthState.failure(AuthFailure failure) = _Failure;
 }
 
-class Authotifier extends StateNotifier<AuthState> {
+class AuthNotifier extends StateNotifier<AuthState> {
   final GithubAuthenticator _authenticator;
 
-  Authotifier(this._authenticator) : super(const AuthState.initial());
+  AuthNotifier(this._authenticator) : super(const AuthState.initial());
 
   Future<void> checkAndUpdateAuthStatus() async {
     state = (await _authenticator.isSignedIn())
