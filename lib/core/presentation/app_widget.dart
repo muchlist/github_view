@@ -1,15 +1,18 @@
 
 import 'package:flutter/material.dart';
-import 'package:github_view/splash/presentation/splash_page.dart';
+import 'package:github_view/core/presentation/routes/app_router.gr.dart';
 
 class AppWidget extends StatelessWidget {
-  const AppWidget({Key? key}) : super(key: key);
+  final appRouter = AppRouter();
+
+  AppWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp.router(
       title: 'Github Viewer',
-      home: SplashPage(),
+      routerDelegate: appRouter.delegate(),
+      routeInformationParser: appRouter.defaultRouteParser(),
     );
   }
 }
