@@ -11,9 +11,8 @@ import '../../core/shared/encoders.dart';
 
 // We made this because github api must have header accept:application/json
 // which is not add by default from func handleAuthorizationResponse in oauth2 lib
-class GithubOauthHttpClient extends http.BaseClient {
+class GithubOAuthHttpClient extends http.BaseClient {
   final httpClient = http.Client();
-
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     request.headers['Accept'] = 'application/json';
@@ -28,7 +27,7 @@ class GithubAuthenticator {
 
   GithubAuthenticator(this._credentialsStorage, this._dio);
 
-  static const clientId = '20b29dd8f502d54bd5a66';
+  static const clientId = '20b29d8f502d54bd5a66';
   static const clientSecret = '497f3d1c88f91fa5fa45b974b5a5791affe963934';
   static const scopes = ['read:user', 'repo'];
   static final authorizationEndpoint =
@@ -36,16 +35,16 @@ class GithubAuthenticator {
   static final tokenEndpoint =
       Uri.parse('https://github.com/login/oauth/access_token');
   static final revocationEndpoint =
-      Uri.parse('https://api.github.com/$clientId/token');
-  static final redirectUrl = Uri.parse('http://localhost:3000/callback');
+      Uri.parse('https://api.github.com/applications/$clientId/token');
+  static final redirectUrl = Uri.parse('https://muchlis.dev/callback');
 
   Future<Credentials?> getSignedInCredentials() async {
     try {
       final storedCredentials = await _credentialsStorage.read();
       if (storedCredentials != null) {
         if (storedCredentials.canRefresh && storedCredentials.isExpired) {
-          final failureOrCredential = await refresh(storedCredentials);
-          return failureOrCredential.fold((l) => null, (r) => r);
+          final failureOrCredentials = await refresh(storedCredentials);
+          return failureOrCredentials.fold((l) => null, (r) => r);
         }
       }
       return storedCredentials;
@@ -63,8 +62,7 @@ class GithubAuthenticator {
       authorizationEndpoint,
       tokenEndpoint,
       secret: clientSecret,
-      httpClient:
-          GithubOauthHttpClient(), // add because we need custom http client
+      httpClient: GithubOAuthHttpClient(),
     );
   }
 
@@ -90,17 +88,16 @@ class GithubAuthenticator {
   }
 
   Future<Either<AuthFailure, Unit>> signOut() async {
-    final accessToken = await _credentialsStorage
-        .read()
-        .then((credential) => credential?.accessToken);
-
-    final usernameAndPassword =
-        stringToBase64.encode('$clientId:$clientSecret');
-
     try {
-      // make sure internet connected when logout to revoke token
+      final accessToken = await _credentialsStorage
+          .read()
+          .then((credentials) => credentials?.accessToken);
+
+      final usernameAndPassword =
+          stringToBase64.encode('$clientId:$clientSecret');
+
       try {
-        _dio.deleteUri(
+        await _dio.deleteUri(
           revocationEndpoint,
           data: {
             'access_token': accessToken,
@@ -118,7 +115,14 @@ class GithubAuthenticator {
           rethrow;
         }
       }
+      return clearCredentialsStorage();
+    } on PlatformException {
+      return left(const AuthFailure.storage());
+    }
+  }
 
+  Future<Either<AuthFailure, Unit>> clearCredentialsStorage() async {
+    try {
       await _credentialsStorage.clear();
       return right(unit);
     } on PlatformException {
@@ -127,15 +131,16 @@ class GithubAuthenticator {
   }
 
   Future<Either<AuthFailure, Credentials>> refresh(
-      Credentials credentials) async {
+    Credentials credentials,
+  ) async {
     try {
-      final refreshCredential = await credentials.refresh(
+      final refreshedCredentials = await credentials.refresh(
         identifier: clientId,
         secret: clientSecret,
-        httpClient: GithubOauthHttpClient(),
+        httpClient: GithubOAuthHttpClient(),
       );
-      await _credentialsStorage.save(refreshCredential);
-      return right(refreshCredential);
+      await _credentialsStorage.save(refreshedCredentials);
+      return right(refreshedCredentials);
     } on FormatException {
       return left(const AuthFailure.server());
     } on AuthorizationException catch (e) {
