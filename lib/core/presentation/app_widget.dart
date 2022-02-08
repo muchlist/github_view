@@ -6,18 +6,18 @@ import 'package:github_view/core/presentation/routes/app_router.gr.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final initializationProvider = FutureProvider<Unit>((ref) async {
-  final authNotifier = ref.watch(authNotifierProvider.notifier);
+  final authNotifier = ref.read(authNotifierProvider.notifier);
   await authNotifier.checkAndUpdateAuthStatus();
   return unit;
 });
 
-class AppWidget extends StatelessWidget {
+class AppWidget extends ConsumerWidget {
   final appRouter = AppRouter();
 
   AppWidget({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ProviderListener(
       provider: initializationProvider,
       onChange: (context, _, __) {},
