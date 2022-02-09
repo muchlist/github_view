@@ -5,6 +5,7 @@ import 'package:github_view/github/core/infrastructure/github_headers.dart';
 import 'package:github_view/github/core/infrastructure/github_headers_cache.dart';
 import 'package:github_view/github/core/infrastructure/github_repo_dto.dart';
 import 'package:github_view/core/infrastructure/dio_extensions.dart';
+import 'package:github_view/github/core/infrastructure/pagination_config.dart';
 
 class StarredReposRemoteService {
   final Dio _dio;
@@ -18,8 +19,14 @@ class StarredReposRemoteService {
     final token = 'asdasdadasdasd';
     final accept = 'asdasdadasdasd';
     _dio.get('');
-    final requestUri =
-        Uri.https('api.github.com', '/user/starred', {'page': '$page'});
+    final requestUri = Uri.https(
+      'api.github.com',
+      '/user/starred',
+      {
+        'page': '$page',
+        'per_page': PaginationConfig.itemsPerPage.toString(),
+      },
+    );
 
     final previousHeaders = await _headersCache.getHeaders(requestUri);
 
@@ -52,12 +59,11 @@ class StarredReposRemoteService {
         return RemoteResponse.withNewData(
           convertedData,
           // maxpage ?? 1 because response github can be null link, and pagi will be one
-          maxPage: headers.link?.maxPage ?? 1, 
+          maxPage: headers.link?.maxPage ?? 1,
         );
       } else {
         throw RestApiException(response.statusCode);
       }
-
     } on DioError catch (e) {
       if (e.isNoConnectionError) {
         return RemoteResponse.noConnection(
