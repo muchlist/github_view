@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:github_view/auth/application/auth_notifier.dart';
 import 'package:github_view/auth/shared/providers.dart';
@@ -8,6 +9,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final initializationProvider = FutureProvider<Unit>((ref) async {
   ref.read(sembastprovider).init();
+  ref.read(dioProvider)
+    ..options = BaseOptions(
+      headers: {
+        'Accept': 'application/vnd.github.v3.html+json',
+      },
+    )
+    ..interceptors.add(
+      ref.read(oauth2InterceptorProvider),
+    );
   final authNotifier = ref.read(authNotifierProvider.notifier);
   await authNotifier.checkAndUpdateAuthStatus();
   return unit;
