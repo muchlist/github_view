@@ -31,8 +31,8 @@ dev_dependencies:
   auto_route_generator: ^3.2.1
   build_runner: ^2.1.7
   flutter_lints: ^1.0.0
-  flutter_test:
-    sdk: flutter
+  # flutter_test:
+  #   sdk: flutter
   freezed: ^1.1.1
   json_serializable: ^6.1.4
 
