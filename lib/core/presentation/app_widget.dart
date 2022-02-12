@@ -14,6 +14,8 @@ final initializationProvider = FutureProvider<Unit>((ref) async {
       headers: {
         'Accept': 'application/vnd.github.v3.html+json',
       },
+      validateStatus: (status) =>
+          status != null && status >= 200 && status < 400,
     )
     ..interceptors.add(
       ref.read(oauth2InterceptorProvider),
@@ -30,33 +32,57 @@ class AppWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ProviderListener(
-      provider: initializationProvider,
-      onChange: (context, _, __) {},
-      child: ProviderListener<AuthState>(
-        provider: authNotifierProvider,
-        onChange: (context, _, state) {
-          state.maybeMap(
-              orElse: () {},
-              authenticated: (_) {
-                appRouter.pushAndPopUntil(
-                  const StarredReposRoute(),
-                  predicate: (route) => false,
-                );
-              },
-              unauthenticated: (_) {
-                appRouter.pushAndPopUntil(
-                  const SignInRoute(),
-                  predicate: (route) => false,
-                );
-              });
-        },
-        child: MaterialApp.router(
-          title: 'Repo Viewer',
-          routerDelegate: appRouter.delegate(),
-          routeInformationParser: appRouter.defaultRouteParser(),
-        ),
-      ),
+    ref.listen(initializationProvider, (_, __) {});
+    ref.listen<AuthState>(authNotifierProvider, (_, state) {
+      state.maybeMap(
+          orElse: () {},
+          authenticated: (_) {
+            appRouter.pushAndPopUntil(
+              const StarredReposRoute(),
+              predicate: (route) => false,
+            );
+          },
+          unauthenticated: (_) {
+            appRouter.pushAndPopUntil(
+              const SignInRoute(),
+              predicate: (route) => false,
+            );
+          });
+    });
+
+    return MaterialApp.router(
+      title: 'Repo Viewer',
+      routerDelegate: appRouter.delegate(),
+      routeInformationParser: appRouter.defaultRouteParser(),
     );
+
+    // return ProviderListener(
+    //   provider: initializationProvider,
+    //   onChange: (context, _, __) {},
+    //   child: ProviderListener<AuthState>(
+    //     provider: authNotifierProvider,
+    //     onChange: (context, _, state) {
+    //       state.maybeMap(
+    //           orElse: () {},
+    //           authenticated: (_) {
+    //             appRouter.pushAndPopUntil(
+    //               const StarredReposRoute(),
+    //               predicate: (route) => false,
+    //             );
+    //           },
+    //           unauthenticated: (_) {
+    //             appRouter.pushAndPopUntil(
+    //               const SignInRoute(),
+    //               predicate: (route) => false,
+    //             );
+    //           });
+    //     },
+    //     child: MaterialApp.router(
+    //       title: 'Repo Viewer',
+    //       routerDelegate: appRouter.delegate(),
+    //       routeInformationParser: appRouter.defaultRouteParser(),
+    //     ),
+    //   ),
+    // );
   }
 }

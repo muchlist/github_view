@@ -11,4 +11,6 @@ class User with _$User {
       required String avatarUrl,
     }
   ) = _User;
+
+  String get avatarUrlSmall => '$avatarUrl&s=64';
 }
