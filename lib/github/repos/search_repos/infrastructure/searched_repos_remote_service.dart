@@ -5,8 +5,8 @@ import 'package:github_view/github/core/infrastructure/github_repo_dto.dart';
 import 'package:github_view/github/core/infrastructure/pagination_config.dart';
 import 'package:github_view/github/repos/core/infrastructure/repos_remote_service.dart';
 
-class SearchReposRemoteService extends ReposRemoteService {
-  SearchReposRemoteService(
+class SearchedReposRemoteService extends ReposRemoteService {
+  SearchedReposRemoteService(
     Dio dio,
     GithubHeadersCache headersCache,
   ) : super(dio, headersCache);

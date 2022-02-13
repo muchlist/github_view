@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dev.muchlis.github_view">
+
    <application
         android:label="github_view"
         android:name="${applicationName}"

@@ -1,10 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:github_view/auth/shared/providers.dart';
+import 'package:github_view/core/presentation/routes/app_router.gr.dart';
 import 'package:github_view/github/core/shared/providers.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'paginated_repos_list_view.dart';
+import '../../core/presentation/paginated_repos_list_view.dart';
 
 class StarredReposPage extends ConsumerStatefulWidget {
   const StarredReposPage({Key? key}) : super(key: key);
@@ -26,19 +28,30 @@ class HomeViewState extends ConsumerState<StarredReposPage> {
     BuildContext context,
   ) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Starred repos'),
-          actions: [
-            IconButton(
-              icon: const Icon(MdiIcons.logoutVariant),
-              onPressed: () {
-                ref.read(authNotifierProvider.notifier).signOut();
-              },
-            )
-          ],
-        ),
-        body: PaginatedReposListView());
+      appBar: AppBar(
+        title: const Text('Starred repos'),
+        actions: [
+          IconButton(
+            icon: const Icon(MdiIcons.logoutVariant),
+            onPressed: () {
+              ref.read(authNotifierProvider.notifier).signOut();
+            },
+          ),
+          IconButton(
+            icon: const Icon(MdiIcons.magnify),
+            onPressed: () {
+              AutoRouter.of(context).push(SearchedReposRoute(searchTerm: 'flutter'));
+            },
+          )
+        ],
+      ),
+      body: PaginatedReposListView(
+        paginatedReposNotifierProvider: starredReposNotifierProvider,
+        getNextPage: (ref) {
+          ref.read(starredReposNotifierProvider.notifier).getNextStarredReposPage();
+        },
+        noResultMessage: "That's about everything we could find in your starred repos right now !",
+      ),
+    );
   }
 }
-
-
