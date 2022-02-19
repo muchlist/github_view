@@ -16,7 +16,6 @@ abstract class ReposRemoteService {
     required Uri requestUri,
     required List<dynamic> Function(dynamic json) jsonDataSelector,
   }) async {
-    _dio.get('');
     final previousHeaders = await _headersCache.getHeaders(requestUri);
 
     try {
@@ -35,7 +34,7 @@ abstract class ReposRemoteService {
       } else if (response.statusCode == 200) {
         final headers = GithubHeaders.parse(response);
 
-        headers.link?.maxPage;
+        // headers.link?.maxPage;
 
         await _headersCache.saveHeaders(requestUri, headers);
 
