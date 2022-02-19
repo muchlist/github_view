@@ -11,7 +11,7 @@ class SearchedReposRemoteService extends ReposRemoteService {
     GithubHeadersCache headersCache,
   ) : super(dio, headersCache);
 
-  Future<RemoteResponse<List<GithubRepoDTO>>> getStarredReposPage(
+  Future<RemoteResponse<List<GithubRepoDTO>>> getSearchedReposPage(
     String query,
     int page,
   ) async =>

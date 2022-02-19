@@ -16,7 +16,7 @@ class SearchedReposRepository {
     int page,
   ) async {
     try {
-      final remotePageItems = await _remoteService.getStarredReposPage(
+      final remotePageItems = await _remoteService.getSearchedReposPage(
         query,
         page,
       );

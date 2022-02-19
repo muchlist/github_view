@@ -4,20 +4,22 @@ import 'package:github_view/github/core/presentation/no_result_display.dart';
 import 'package:github_view/github/repos/core/application/paginated_repos_notifier.dart';
 import 'package:github_view/github/repos/core/presentation/repo_tile.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 
 import 'failure_repo_tile.dart';
 import 'loading_repo_tile.dart';
 
 class PaginatedReposListView extends StatefulWidget {
-  final AutoDisposeStateNotifierProvider<PaginatedReposNotifier, PaginatedReposState>
-      paginatedReposNotifierProvider;
+  final AutoDisposeStateNotifierProvider<PaginatedReposNotifier,
+      PaginatedReposState> paginatedReposNotifierProvider;
   final void Function(WidgetRef ref) getNextPage;
   final String noResultMessage;
 
-  const PaginatedReposListView({Key? key, 
-  required this.paginatedReposNotifierProvider, 
-  required this.getNextPage,
-  required this.noResultMessage})
+  const PaginatedReposListView(
+      {Key? key,
+      required this.paginatedReposNotifierProvider,
+      required this.getNextPage,
+      required this.noResultMessage})
       : super(key: key);
 
   @override
@@ -66,7 +68,7 @@ class _PaginatedReposListViewState extends State<PaginatedReposListView> {
                   orElse: () => false)
               ? NoResultsDisplay(
                   message: widget.noResultMessage,
-                      )
+                )
               : _PaginatedListView(state: state));
     }));
   }
@@ -82,7 +84,12 @@ class _PaginatedListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fsb = FloatingSearchBar.of(context)?.widget;
     return ListView.builder(
+      padding: fsb == null
+          ? EdgeInsets.zero
+          : EdgeInsets.only(
+              top: fsb.height + 8 + MediaQuery.of(context).padding.top),
       itemCount: state.map(
         initial: (s) => 0,
         loadInProgress: (s) => s.repos.entity.length + s.itemsPerPage,

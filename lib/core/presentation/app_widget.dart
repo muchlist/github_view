@@ -8,7 +8,7 @@ import 'package:github_view/core/shared/providers.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final initializationProvider = FutureProvider<Unit>((ref) async {
-  ref.read(sembastprovider).init();
+  await ref.read(sembastprovider).init();
   ref.read(dioProvider)
     ..options = BaseOptions(
       headers: {
@@ -22,6 +22,7 @@ final initializationProvider = FutureProvider<Unit>((ref) async {
     );
   final authNotifier = ref.read(authNotifierProvider.notifier);
   await authNotifier.checkAndUpdateAuthStatus();
+  Println("====================== initial");
   return unit;
 });
 
@@ -32,8 +33,13 @@ class AppWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(initializationProvider, (_, __) {});
+    ref.listen(initializationProvider, (_, __) {
+      
+    });
+
+    
     ref.listen<AuthState>(authNotifierProvider, (_, state) {
+      Println("====================== auth called");
       state.maybeMap(
           orElse: () {},
           authenticated: (_) {

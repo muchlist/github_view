@@ -1,5 +1,4 @@
 import 'package:flash/flash.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showNoConnetionToast(String message, BuildContext context) async {
