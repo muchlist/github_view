@@ -44,6 +44,27 @@ class RepoDetailNotifier extends StateNotifier<RepoDetailState> {
     );
   }
 
-
-
+  // Optimistic update example
+  Future<void> switchStarredStatus(GithubRepoDetail repoDetail) async {
+    state.maybeMap(
+      orElse: () {},
+      loadSuccess: (successState) async {
+        final stateCopy = successState.copyWith();
+        final repoDetail = successState.repoDetail.entity;
+        if (repoDetail != null) {
+          state = successState.copyWith.repoDetail(
+            entity: repoDetail.copyWith(starred: !repoDetail.starred),
+          );
+          final failureOrSuccess =
+              await _repository.switchStarredStatus(repoDetail);
+          failureOrSuccess.fold(
+            (l) => state = stateCopy,
+            (r) => r == null
+                ? state = stateCopy
+                : state = state.copyWith(hasStarredStatuschange: true),
+          );
+        }
+      },
+    );
+  }
 }
