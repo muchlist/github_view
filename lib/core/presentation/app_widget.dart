@@ -22,7 +22,6 @@ final initializationProvider = FutureProvider<Unit>((ref) async {
     );
   final authNotifier = ref.read(authNotifierProvider.notifier);
   await authNotifier.checkAndUpdateAuthStatus();
-  Println("====================== initial");
   return unit;
 });
 
@@ -33,13 +32,9 @@ class AppWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(initializationProvider, (_, __) {
-      
-    });
+    ref.listen(initializationProvider, (_, __) {});
 
-    
     ref.listen<AuthState>(authNotifierProvider, (_, state) {
-      Println("====================== auth called");
       state.maybeMap(
           orElse: () {},
           authenticated: (_) {
@@ -58,37 +53,15 @@ class AppWidget extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Repo Viewer',
+      theme: _setupThemeData(),
       routerDelegate: appRouter.delegate(),
       routeInformationParser: appRouter.defaultRouteParser(),
     );
+  }
 
-    // return ProviderListener(
-    //   provider: initializationProvider,
-    //   onChange: (context, _, __) {},
-    //   child: ProviderListener<AuthState>(
-    //     provider: authNotifierProvider,
-    //     onChange: (context, _, state) {
-    //       state.maybeMap(
-    //           orElse: () {},
-    //           authenticated: (_) {
-    //             appRouter.pushAndPopUntil(
-    //               const StarredReposRoute(),
-    //               predicate: (route) => false,
-    //             );
-    //           },
-    //           unauthenticated: (_) {
-    //             appRouter.pushAndPopUntil(
-    //               const SignInRoute(),
-    //               predicate: (route) => false,
-    //             );
-    //           });
-    //     },
-    //     child: MaterialApp.router(
-    //       title: 'Repo Viewer',
-    //       routerDelegate: appRouter.delegate(),
-    //       routeInformationParser: appRouter.defaultRouteParser(),
-    //     ),
-    //   ),
-    // );
+  ThemeData _setupThemeData() {
+    return ThemeData(
+      primaryColor: Colors.grey.shade50,
+    );
   }
 }
