@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:github_view/github/core/domain/github_failure.dart';
-import 'package:github_view/github/core/shared/providers.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'paginated_repos_list_view.dart';
