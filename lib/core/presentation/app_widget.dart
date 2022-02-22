@@ -8,7 +8,7 @@ import 'package:github_view/core/shared/providers.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final initializationProvider = FutureProvider<Unit>((ref) async {
-  ref.read(sembastprovider).init();
+  await ref.read(sembastprovider).init();
   ref.read(dioProvider)
     ..options = BaseOptions(
       headers: {
@@ -33,6 +33,7 @@ class AppWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(initializationProvider, (_, __) {});
+
     ref.listen<AuthState>(authNotifierProvider, (_, state) {
       state.maybeMap(
           orElse: () {},
@@ -52,37 +53,15 @@ class AppWidget extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Repo Viewer',
+      theme: _setupThemeData(),
       routerDelegate: appRouter.delegate(),
       routeInformationParser: appRouter.defaultRouteParser(),
     );
+  }
 
-    // return ProviderListener(
-    //   provider: initializationProvider,
-    //   onChange: (context, _, __) {},
-    //   child: ProviderListener<AuthState>(
-    //     provider: authNotifierProvider,
-    //     onChange: (context, _, state) {
-    //       state.maybeMap(
-    //           orElse: () {},
-    //           authenticated: (_) {
-    //             appRouter.pushAndPopUntil(
-    //               const StarredReposRoute(),
-    //               predicate: (route) => false,
-    //             );
-    //           },
-    //           unauthenticated: (_) {
-    //             appRouter.pushAndPopUntil(
-    //               const SignInRoute(),
-    //               predicate: (route) => false,
-    //             );
-    //           });
-    //     },
-    //     child: MaterialApp.router(
-    //       title: 'Repo Viewer',
-    //       routerDelegate: appRouter.delegate(),
-    //       routeInformationParser: appRouter.defaultRouteParser(),
-    //     ),
-    //   ),
-    // );
+  ThemeData _setupThemeData() {
+    return ThemeData(
+      primaryColor: Colors.grey.shade50,
+    );
   }
 }
